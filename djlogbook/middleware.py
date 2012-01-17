@@ -45,8 +45,8 @@ class DjLogbookMiddleware(object):
                 absolute_uri=request.build_absolute_uri(),
             )
         self._processor = logbook.Processor(inject_info)
-        self._processor.push_application()
+        self._processor.push_thread()
 
     def process_response(self, request, response):
-        self._processor.pop_application()
+        self._processor.pop_thread()
         return response
