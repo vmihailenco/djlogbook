@@ -28,8 +28,8 @@ class DjLogbookMiddleware(object):
             settings.DEFAULT_FROM_EMAIL,
             recepients,
             level=logbook.ERROR,
-            bubble=True)
-        mhandler.push_application()
+            bubble=False)
+        logbook.Logger('django.request').handlers.append(mhandler)
 
     def process_request(self, request):
         if not self._setup:
