@@ -21,14 +21,15 @@ admin.site.register(Ticket, TicketAdmin)
 
 class OccurrenceAdmin(admin.ModelAdmin):
     readonly_fields = ('data', 'message', 'html_formatted_exception')
+    raw_id_fields = ('ticket',)
     list_display = (
         'occurrence_id',
         'ticket',
+        'level_name',
         'short_message',
         'time',
         'app_id')
-    list_filter = ('ticket', 'time', 'app_id')
-    raw_id_fields = ('ticket',)
+    list_filter = ('ticket__level', 'time', 'ticket', 'app_id')
 
     # TODO: move to template
     def html_formatted_exception(self, obj):

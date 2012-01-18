@@ -54,13 +54,21 @@ class Occurrence(models.Model):
         return simplejson.loads(self.data)
 
     @property
+    def level(self):
+        return int(self._data.get('level', logbook.NOTSET))
+
+    @property
+    def level_name(self):
+        return dict(Ticket.LEVEL_CHOICES).get(self.level)
+
+    @property
     def message(self):
         return self._data.get('message', '')
 
     @property
     def short_message(self):
-        if len(self.message) > 16:
-            return self.message[:16] + '...'
+        if len(self.message) > 32:
+            return self.message[:32] + '...'
         else:
             return self.message
 

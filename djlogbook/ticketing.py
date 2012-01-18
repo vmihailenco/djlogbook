@@ -1,4 +1,5 @@
-from logbook.ticketing import BackendBase
+from logbook.ticketing import BackendBase, Ticket as LbTicket, \
+     Occurrence as LbOccurrence
 from django.db.models import F
 from django.utils import simplejson
 
@@ -40,7 +41,8 @@ class DjangoORMBackend(BackendBase):
     def get_tickets(
         self, order_by='-last_occurrence_time', limit=50, offset=0):
         """Selects tickets from the database."""
-        return list(Ticket.objects.order_by(order_by)[offset:limit])
+        tickets = Ticket.objects.order_by(order_by)[offset:limit]
+        return [LbTicket(self, t) for t in tickets]
 
     def solve_ticket(self, ticket_id):
         """Marks a ticket as solved."""
@@ -54,13 +56,14 @@ class DjangoORMBackend(BackendBase):
     def get_ticket(self, ticket_id):
         """Return a single ticket with all occurrences."""
         try:
-            return Ticket.objects.get(ticket_id=ticket_id)
+            t = Ticket.objects.get(ticket_id=ticket_id)
+            return LbTicket(self, t)
         except Ticket.DoesNotExist:
-            return Ticket()
+            return None
 
     def get_occurrences(self, ticket, order_by='-time', limit=50, offset=0):
         """Selects occurrences from the database for a ticket."""
-        return list(
-            Occurrence.objects \
+        occurrences = Occurrence.objects \
                 .filter(ticket_id=ticket) \
-                .order_by(order_by)[offset:limit])
+                .order_by(order_by)[offset:limit]
+        return [LbOccurrence(self, o) for o in occurrences]
